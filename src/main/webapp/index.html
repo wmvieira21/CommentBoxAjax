@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Html.html to edit this template
+-->
+<html>
+    <head>
+        <title>CommentBox with Ajax</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+        <link href="bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css"/>
+        <script src="jquery/jquery-3.6.4.js" type="text/javascript"></script>
+        <script src="jquery/jquery.validate.min.js" type="text/javascript"></script>
+    </head>
+    <header>
+        <nav class="navbar navbar-black bg-dark">
+            <div style="color: whitesmoke">CommentBox with Ajax</div>
+        </nav>
+    </header>
+    <body>
+        <div class="container" style="margin-top: 20px">
+            <div class="content">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <h1 style="color: blue">Comment</h1>
+                        <form id="commentForm">
+                            <div class="form-group">
+                                <input class="form-control" type="text" name="nameUser" id="nameUser" 
+                                       placeholder="Username" required>
+                            </div>
+
+                            <div class="form-group">
+                                <textarea id="comment" class="form-control" name="comment" rows="3" cols="75"  required></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <button class="btn btn-success" type="button" onclick="addComment()">Send</button>
+                            </div>
+                        </form>
+
+                        <hr>
+                        <div class="panel panel-default">
+                            <div class="panel panel-body" id="commentsPanel">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            getAllComments();
+
+            function getAllComments() {
+                $("#commentsPanel").html("");
+
+                $.ajax({
+                    url: "getAllComments.jsp",
+                    type: "GET",
+                    dataType: 'JSON',
+                    success: function (data, textStatus, jqXHR) {
+                        console.log(data);
+                        for (var item of data) {
+                            $("#commentsPanel").append("<div class='card-header' style='border: 1px solid grey'>" + item.user + "</div> <br>\n\
+                         <div class='card-block'>" + item.comment + "</div>");
+                        }
+                    }
+                });
+            }
+            function addComment() {
+                if ($("#commentForm").valid()) {
+                    $.ajax({
+                        url: "addComment.jsp",
+                        data: $("#commentForm").serialize(),
+                        type: "POST",
+                        dataType: "JSON",
+
+                        success: function (data, textStatus, jqXHR) {
+                            getAllComments();
+                            $("#nameUser").val(null);
+                            $("#comment").val(null);
+                        }
+                    });
+                }
+            }
+        </script>
+    </body>
+</html>
